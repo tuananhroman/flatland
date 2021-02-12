@@ -45,12 +45,14 @@
  */
 
 #include "flatland_server/simulation_manager.h"
+
 #include <flatland_server/debug_visualization.h>
 #include <flatland_server/layer.h>
 #include <flatland_server/model.h>
 #include <flatland_server/service_manager.h>
 #include <flatland_server/world.h>
 #include <ros/ros.h>
+
 #include <exception>
 #include <limits>
 #include <string>
@@ -59,7 +61,12 @@ namespace flatland_server {
 
 SimulationManager::SimulationManager(std::string world_yaml_file,
                                      double update_rate, double step_size,
+<<<<<<< HEAD
                                      bool show_viz, double viz_pub_rate,bool train_mode)
+=======
+                                     bool show_viz, double viz_pub_rate,
+                                     bool train_mode)
+>>>>>>> origin/dev_multi_lei
     : world_(nullptr),
       update_rate_(update_rate),
       step_size_(step_size),
@@ -67,24 +74,44 @@ SimulationManager::SimulationManager(std::string world_yaml_file,
       viz_pub_rate_(viz_pub_rate),
       world_yaml_file_(world_yaml_file),
       train_mode_(train_mode) {
+<<<<<<< HEAD
       ROS_INFO_NAMED("SimMan",
+=======
+  ROS_INFO_NAMED("SimMan",
+>>>>>>> origin/dev_multi_lei
                  "Simulation params: world_yaml_file(%s) update_rate(%f), "
                  "step_size(%f) show_viz(%s), viz_pub_rate(%f)",
                  world_yaml_file_.c_str(), update_rate_, step_size_,
                  show_viz_ ? "true" : "false", viz_pub_rate_);
+<<<<<<< HEAD
     timekeeper.SetMaxStepSize(step_size_);
+=======
+  timekeeper.SetMaxStepSize(step_size_);
+>>>>>>> origin/dev_multi_lei
 }
 
 void SimulationManager::Main() {
   ROS_INFO_NAMED("SimMan", "Initializing...");
   run_simulator_ = true;
+<<<<<<< HEAD
   
   ros::WallRate rate(update_rate_);
   
+=======
+  // In training mode, our task generator need to load the map from
+  // the map server, but as we know the map server will to push
+  // the map topic at simulation time 1s.
+  // so we make flatland update the world multiple steps to send out /clock
+  // signal.
+  int pre_run_steps = fmin(5 / step_size_, 1000);
+
+  ros::WallRate rate(update_rate_);
+
+>>>>>>> origin/dev_multi_lei
   try {
     world_ = World::MakeWorld(world_yaml_file_);
     ROS_INFO_NAMED("SimMan", "World loaded");
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     ROS_FATAL_NAMED("SimMan", "%s", e.what());
     return;
   }
@@ -97,6 +124,7 @@ void SimulationManager::Main() {
   double max_cycle_util = 0;
   double viz_update_period = 1.0f / viz_pub_rate_;
   ServiceManager service_manager(this, world_);
+<<<<<<< HEAD
   //Timekeeper timekeeper;
 
   
@@ -109,6 +137,19 @@ void SimulationManager::Main() {
     step_world_service_ = nh.advertiseService("step_world", &SimulationManager::callback_StepWorld, this);
   }
   
+=======
+  // Timekeeper timekeeper;
+
+  ROS_INFO_NAMED("SimMan", "Simulation loop started");
+
+  // advertise: step world service server
+  if (train_mode_) {
+    ros::NodeHandle nh;
+    step_world_service_ = nh.advertiseService(
+        "step_world", &SimulationManager::callback_StepWorld, this);
+  }
+
+>>>>>>> origin/dev_multi_lei
   while (ros::ok() && run_simulator_) {
     // for updating visualization at a given rate
     // see flatland_plugins/update_timer.cpp for this formula
@@ -117,13 +158,19 @@ void SimulationManager::Main() {
       f = fmod(ros::WallTime::now().toSec() +
                    (rate.expectedCycleTime().toSec() / 2.0),
                viz_update_period);
-    } catch (std::runtime_error& ex) {
+    } catch (std::runtime_error &ex) {
       ROS_ERROR("Flatland runtime error: [%s]", ex.what());
     }
     bool update_viz = ((f >= 0.0) && (f < rate.expectedCycleTime().toSec()));
 
+<<<<<<< HEAD
     if(train_mode_==false){
       world_->Update(timekeeper);  // Step physics by ros cycle time
+=======
+    if (train_mode_ == false || pre_run_steps > 0) {
+      world_->Update(timekeeper);  // Step physics by ros cycle time
+      pre_run_steps = fmax(--pre_run_steps, 0);
+>>>>>>> origin/dev_multi_lei
     }
 
     if (show_viz_ && update_viz) {
@@ -135,6 +182,7 @@ void SimulationManager::Main() {
     ros::spinOnce();
     rate.sleep();
 
+<<<<<<< HEAD
     iterations++;
 
     double cycle_time = rate.cycleTime().toSec() * 1000;
@@ -148,6 +196,31 @@ void SimulationManager::Main() {
         1, "SimMan",
         "utilization: min %.1f%% max %.1f%% ave %.1f%%  factor: %.1f",
         min_cycle_util, max_cycle_util, filtered_cycle_util, factor);
+=======
+    // iterations++;
+    // if (iterations > 100) {
+    //   //
+    //   iterations--;
+    //   double cycle_time = rate.cycleTime().toSec() * 1000;
+    //   double expected_cycle_time = rate.expectedCycleTime().toSec() * 1000;
+    //   double cycle_util = cycle_time / expected_cycle_time * 100;  // in percent
+    //   double factor = timekeeper.GetStepSize() * 1000 / expected_cycle_time;
+    //   min_cycle_util = std::min(cycle_util, min_cycle_util);
+    //   max_cycle_util = std::max(cycle_util, max_cycle_util);
+    //   filtered_cycle_util = 0.99 * filtered_cycle_util + 0.01 * cycle_util;
+    //   ROS_INFO_THROTTLE_NAMED(
+    //       5, "SimMan",
+    //       "utilization: min %.1f%% max %.1f%% ave %.1f%%  factor: %.1f",
+    //       min_cycle_util, max_cycle_util, filtered_cycle_util, factor);
+    //   if(iterations>200){
+    //     iterations--;
+    //     ROS_INFO_COND_NAMED(
+    //         train_mode_, "SimMan",
+    //         "Suggested number of environments for training: %4d",
+    //         static_cast<int8>(1 / filtered_cycle_util));
+    //   }
+    // }
+>>>>>>> origin/dev_multi_lei
   }
   ROS_INFO_NAMED("SimMan", "Simulation loop ended");
 
@@ -159,8 +232,14 @@ void SimulationManager::Shutdown() {
   run_simulator_ = false;
 }
 
+<<<<<<< HEAD
 bool SimulationManager::callback_StepWorld(flatland_msgs::StepWorld::Request &request,flatland_msgs::StepWorld::Response &response){
   
+=======
+bool SimulationManager::callback_StepWorld(
+    flatland_msgs::StepWorld::Request &request,
+    flatland_msgs::StepWorld::Response &response) {
+>>>>>>> origin/dev_multi_lei
   try {
     // ros::WallRate rate_set(update_rate_);
     // double required_duration=request.step_time.data;
@@ -172,6 +251,7 @@ bool SimulationManager::callback_StepWorld(flatland_msgs::StepWorld::Request &re
     //   rate_set.sleep();
     // }
     world_->Update(timekeeper);  // Step physics by ros cycle time
+<<<<<<< HEAD
     last_update_time_=ros::WallTime::now().toSec();
     response.success = true;
     std::string current_time = std::to_string(timekeeper.GetSimTime().toSec());
@@ -189,4 +269,19 @@ bool SimulationManager::callback_StepWorld(flatland_msgs::StepWorld::Request &re
 }
 
 
+=======
+    last_update_time_ = ros::WallTime::now().toSec();
+    response.success = true;
+    std::string current_time = std::to_string(timekeeper.GetSimTime().toSec());
+    response.message = "current sim time(s):  " + current_time;
+    // ros::Time current_time=timekeeper.GetSimTime();
+
+  } catch (const std::exception &e) {
+    response.success = false;
+    response.message = std::string(e.what());
+    ROS_ERROR_NAMED("Service", "Failed to step world! Exception: %s", e.what());
+  }
+  return true;
+}
+>>>>>>> origin/dev_multi_lei
 };  // namespace flatland_server

@@ -51,6 +51,7 @@
 #include <flatland_server/debug_visualization.h>
 #include <flatland_server/timekeeper.h>
 #include <flatland_server/world.h>
+#include<flatland_msgs/StepWorld.h>
 #include <string>
 
 #include <flatland_msgs/StepWorld.h>
@@ -66,11 +67,19 @@ class SimulationManager {
   bool show_viz_;                ///< flag to determine if to show visualization
   double viz_pub_rate_;          ///< rate to publish visualization
   std::string world_yaml_file_;  ///< path to the world file
+<<<<<<< HEAD
   bool train_mode_;               ///< train_mode_ selection, when true ,update by step, else with fixed rate
 
   // add step_world_service in simulationManager
   Timekeeper timekeeper;
   ros::ServiceServer step_world_service_; 
+=======
+  bool train_mode_;  ///< train_mode_ selection, when true ,update by step, else
+
+  // add step_world_service in simulationManager
+  Timekeeper timekeeper;
+  ros::ServiceServer step_world_service_;
+>>>>>>> origin/dev_multi_lei
   double last_update_time_;
 
   /**
@@ -83,7 +92,12 @@ class SimulationManager {
    * behaving ones
    */
   SimulationManager(std::string world_yaml_file, double update_rate,
+<<<<<<< HEAD
                     double step_size, bool show_viz, double viz_pub_rate,bool train_mode);
+=======
+                    double step_size, bool show_viz, double viz_pub_rate,
+                    bool train_mode);
+>>>>>>> origin/dev_multi_lei
 
   /**
    * This method contains the loop that runs the simulation
@@ -96,11 +110,19 @@ class SimulationManager {
   void Shutdown();
 
   /**
+<<<<<<< HEAD
    * callback function for step_world, 
    * update the world by a step,  
   */
   bool callback_StepWorld(flatland_msgs::StepWorld::Request &request,flatland_msgs::StepWorld::Response &response);
 
+=======
+   * callback function for step_world,
+   * update the world by a step,
+   */
+  bool callback_StepWorld(flatland_msgs::StepWorld::Request &request,
+                          flatland_msgs::StepWorld::Response &response);
+>>>>>>> origin/dev_multi_lei
 };
 };      // namespace flatland_server
 #endif  // FLATLAND_SERVER_SIMULATION_MANAGER_H

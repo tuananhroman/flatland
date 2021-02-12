@@ -18,7 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
   flatland_msgs
   std_msgs
   nav_msgs
+<<<<<<< HEAD
   pedsim_msgs
+=======
+>>>>>>> origin/dev_multi_lei
 )
 
 
@@ -81,9 +84,12 @@ endforeach()
 add_library(arena_plugins_lib
   src/random_move.cpp
   src/tween2.cpp
+<<<<<<< HEAD
   src/pedsim_movement.cpp
   src/triangle_profile.cpp
   src/pose_pub.cpp
+=======
+>>>>>>> origin/dev_multi_lei
 )
 
 add_dependencies(arena_plugins_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
