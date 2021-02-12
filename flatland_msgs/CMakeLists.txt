@@ -35,10 +35,7 @@ add_service_files(FILES
   DeleteModels.srv
   MoveModel.srv
   StepWorld.srv
-<<<<<<< HEAD
   Step.srv
-=======
->>>>>>> origin/dev_multi_lei
 )
 
 generate_messages(

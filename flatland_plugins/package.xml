@@ -22,12 +22,7 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>flatland_msgs</depend>
-<<<<<<< HEAD
   <depend>nav_msgs</depend> 
-=======
-  <depend>nav_msgs</depend>
-  
->>>>>>> origin/dev_multi_lei
   
   <export>
     <flatland_server plugin="${prefix}/flatland_plugins.xml" />
