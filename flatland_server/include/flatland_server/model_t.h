@@ -66,14 +66,12 @@ class Joint;
  */
 class Model : public Entity {
  public:
-  std::string model_yaml_path_;      ///< name of the yaml-path. Identifies the object type
   std::string namespace_;            ///< namespace of the model
   std::vector<ModelBody *> bodies_;  ///< list of bodies in the model
   std::vector<Joint *> joints_;      ///< list of joints in the model
   YamlReader plugins_reader_;        ///< for storing plugins when paring YAML
   CollisionFilterRegistry *cfr_;     ///< Collision filter registry
   std::string viz_name_;             ///< used for visualization
-  bool model_enabled_;
 
   /**
    * @brief Constructor for the model
@@ -82,7 +80,7 @@ class Model : public Entity {
    * @param[in] name Name of the model
    */
   Model(b2World *physics_world, CollisionFilterRegistry *cfr,
-        const std::string &ns, const std::string &name, const std::string &model_yaml_path_);
+        const std::string &ns, const std::string &name);
 
   /**
    * @brief Destructor for the layer class
@@ -136,13 +134,6 @@ class Model : public Entity {
    */
   const std::string &GetNameSpace() const;
 
-
-  /**
-   * @return Set the namespace of the model
-   */
-  bool &SetNameSpace(std::string ns);
-
-
   /**
    * @return prepend the tf with namespace_
    */
@@ -157,12 +148,6 @@ class Model : public Entity {
    * @return The name of the model
    */
   const std::string &GetName() const;
-
-  /**
-   * @return The yaml path, the model is based on.
-   */
-  const std::string GetYamlPath();
-
 
   /**
    * @return The collision filter registrar
@@ -208,23 +193,6 @@ class Model : public Entity {
   static Model *MakeModel(b2World *physics_world, CollisionFilterRegistry *cfr,
                           const std::string &model_yaml_path,
                           const std::string &ns, const std::string &name);
-
-  /**
-   * @brief Model is disabled in Simulation
-   */
-  void DisableModel();
-
-  /**
-   * @brief Model is enabled in Simulation
-   */
-  void EnableModel();
-
-  /**
-   * @brief True if model is enabled
-   */
-  bool IsEnabled();
-
-
 };
 };      // namespace flatland_server
 #endif  // FLATLAND_SERVER_MODEL_H

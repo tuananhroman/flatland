@@ -89,5 +89,4 @@ bool ModelPlugin::FilterContact(b2Contact *contact) {
   Entity *e;
   return FilterContact(contact, e, f1, f2);
 }
-
 };  // namespace flatland_server

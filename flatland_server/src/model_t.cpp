@@ -52,15 +52,11 @@
 namespace flatland_server {
 
 Model::Model(b2World *physics_world, CollisionFilterRegistry *cfr,
-             const std::string &ns, const std::string &name, const std::string &model_yaml_path)
+             const std::string &ns, const std::string &name)
     : Entity(physics_world, name),
       namespace_(ns),
       cfr_(cfr),
-      viz_name_("model/" + name_),
-      model_yaml_path_(model_yaml_path)
-      {
-        model_enabled_ = true;
-      }
+      viz_name_("model/" + name_) {}
 
 Model::~Model() {
   for (unsigned int i = 0; i < joints_.size(); i++) {
@@ -83,7 +79,8 @@ Model *Model::MakeModel(b2World *physics_world, CollisionFilterRegistry *cfr,
                         const std::string &ns, const std::string &name) {
   YamlReader reader(model_yaml_path);
   reader.SetErrorInfo("model " + Q(name));
-  Model *m = new Model(physics_world, cfr, ns, name, model_yaml_path);
+
+  Model *m = new Model(physics_world, cfr, ns, name);
 
   m->plugins_reader_ = reader.SubnodeOpt("plugins", YamlReader::LIST);
 
@@ -180,10 +177,6 @@ const std::vector<Joint *> &Model::GetJoints() { return joints_; }
 
 const std::string &Model::GetNameSpace() const { return namespace_; }
 
-bool &Model::SetNameSpace(std::string ns) { 
-   namespace_ = ns;
-}
-
 std::string Model::NameSpaceTF(const std::string &frame_id) const {
   // case: "global" namespace: don't prefix, strip leading slash
   if (frame_id.substr(0, 1) == "/") {
@@ -261,9 +254,6 @@ void Model::DebugVisualize() const {
   DebugVisualization::Get().Reset(viz_name_);
 
   for (const auto &body : bodies_) {
-    //If there are no fixtures, no need of visualizing the body.
-    if (body->physics_body_->GetFixtureList() == NULL)
-      continue;
     DebugVisualization::Get().Visualize(viz_name_, body->physics_body_,
                                         body->color_.r, body->color_.g,
                                         body->color_.b, body->color_.a);
@@ -290,30 +280,6 @@ void Model::DebugOutput() const {
   for (const auto &joint : joints_) {
     joint->DebugOutput();
   }
-}
-
-const std::string Model::GetYamlPath(){
-  return model_yaml_path_;
-}
-
-void Model::DisableModel(){
-  //remove fixture
-  for (const auto &body : bodies_) {
-      body->DisableBody();
-  }
-  model_enabled_ = false;
-}
-
-void Model::EnableModel(){
-  //ad fixture again
-  for (const auto &body : bodies_) {
-      body->EnableBody();
-  }
-  model_enabled_ = true;
-}
-
-bool Model::IsEnabled(){
-  return model_enabled_;
 }
 
 void Model::DumpBox2D() const {

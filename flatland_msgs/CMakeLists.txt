@@ -35,6 +35,7 @@ add_service_files(FILES
   DeleteModels.srv
   MoveModel.srv
   StepWorld.srv
+  Step.srv
 )
 
 generate_messages(

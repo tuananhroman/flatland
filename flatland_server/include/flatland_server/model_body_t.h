@@ -65,12 +65,6 @@ class Model;
 class ModelBody : public Body {
  public:
   CollisionFilterRegistry *cfr_;  ///< collision filter registry
-  std::vector<b2Fixture*> fixtures;
-  std::vector<b2PolygonShape> p_shape;
-  std::vector<b2CircleShape> c_shape;
-
-  std::vector<b2FixtureDef> c_fixture_defs;
-  std::vector<b2FixtureDef> p_fixture_defs;
 
   /**
    * @brief Constructor for the Model Body
@@ -136,19 +130,6 @@ class ModelBody : public Body {
   static ModelBody *MakeBody(b2World *physics_world,
                              CollisionFilterRegistry *cfr, Model *model,
                              YamlReader &body_node);
-
-
-  /**
-   * @brief Disables Body in Box2d physics simulation
-   */
-  void DisableBody();
-
-
-  /**
-   * @brief Enables Body in Box2d physics simulation
-   */
-  void EnableBody();
-
 };
 };      // namespace flatland_server
 #endif  // FLATLAND_MODEL_BODY_H

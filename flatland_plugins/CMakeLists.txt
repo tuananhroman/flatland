@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   flatland_msgs
   std_msgs
-  pedsim_msgs
 )
 
 find_package(Eigen3 REQUIRED)
@@ -73,7 +72,7 @@ add_library(flatland_plugins_lib
   src/laser.cpp
   src/tricycle_drive.cpp
   src/diff_drive.cpp
-  src/model_tf_publisher.cpp  
+  src/model_tf_publisher.cpp
   src/update_timer.cpp
   src/bumper.cpp
   src/tween.cpp

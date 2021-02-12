@@ -41,7 +41,7 @@ class PedsimMovement : public ModelPlugin {
  * @brief For reconfiguring plugin, when model was disabled.
  * Body Footprint of leg(s) will be set.
  */
-  void reconfigure();
+  void reconfigure() override;
 
 
   /**
@@ -74,6 +74,7 @@ class PedsimMovement : public ModelPlugin {
 
     // Recent agent state
     pedsim_msgs::AgentStatesConstPtr agents_;///< most recent pedsim agent state
+    // std::queue<pedsim_msgs::AgentStatesConstPtr> q_agents_;
 
     double leg_offset_;                      ///< offset between the legs
     bool toggle_leg_movement_;               ///< if true: legs are moving. if false: legs stand still

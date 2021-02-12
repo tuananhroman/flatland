@@ -43,7 +43,7 @@ void PedsimMovement::OnInitialize(const YAML::Node &config){
     std::string pedsim_agents_topic = ros::this_node::getNamespace() + reader.Get<std::string>("agent_topic");
     
     double update_rate = reader.Get<double>("update_rate");
-    update_timer_.SetRate(update_rate);  // timer to update global movement of agent
+    // update_timer_.SetRate(update_rate);  // timer to update global movement of agent
     
     //Walking profile
     wp_ = new flatland_plugins::TriangleProfile(step_time);
@@ -76,13 +76,14 @@ void PedsimMovement::reconfigure(){
 
 void PedsimMovement::BeforePhysicsStep(const Timekeeper &timekeeper) {
     // check if an update is REQUIRED
-    if (!update_timer_.CheckUpdate(timekeeper) || agents_ == NULL) {
+    if (agents_ == NULL) { //!update_timer_.CheckUpdate(timekeeper) || 
         return;
     }
 
     
     // get agents ID via namespace
     std::string ns_str = GetModel()->GetNameSpace();
+    // ROS_WARN("name space: %s",ns_str.c_str());
     int id_ = std::stoi(ns_str.substr(13, ns_str.length()));
 
     //Find appropriate agent in list
@@ -91,6 +92,7 @@ void PedsimMovement::BeforePhysicsStep(const Timekeeper &timekeeper) {
         pedsim_msgs::AgentState p = agents_->agent_states[i];
         if (p.id == id_){
             person = p;
+            // ROS_WARN("find agent: %d",id_);
             break;
         }
     };
@@ -109,10 +111,12 @@ void PedsimMovement::BeforePhysicsStep(const Timekeeper &timekeeper) {
     }
 
 
-    float32 vel_x = person.twist.linear.x;
-    float32 vel_y = person.twist.linear.y;
-    float32 angle_soll = atan2(vel_y, vel_x);
-    float32 angle_ist = body_->GetAngle();
+    float vel_x =person.twist.linear.x;; //
+    // ROS_WARN("vel_x%f",vel_x);
+    float vel_y =person.twist.linear.y;; // 
+    // ROS_WARN("vel_y%f",vel_y);
+    float angle_soll = atan2(vel_y, vel_x);
+    float angle_ist = body_->GetAngle();
 
     //Set pedsim_agent position in flatland simulator
     body_->SetTransform(b2Vec2(person.pose.position.x, person.pose.position.y), angle_soll);
@@ -123,19 +127,22 @@ void PedsimMovement::BeforePhysicsStep(const Timekeeper &timekeeper) {
     //set each leg to the appropriate position.
     if (toggle_leg_movement_){      
         double vel_mult = wp_->get_speed_multiplier(vel_x);
+        // ROS_WARN("vel_mult %lf",vel_mult);
         switch (state_){
             //Right leg is moving
             case RIGHT:
                 moveRightLeg(vel_x * vel_mult, vel_y * vel_mult, (angle_soll - angle_ist));
-                if (vel_mult == 0.0){
+                if (vel_mult ==0.0){
                     state_ = LEFT;
+                    // ROS_WARN("turn to left");
                 }
                 break;
             //Left leg is moving
             case LEFT:
                 moveLeftLeg(vel_x * vel_mult, vel_y * vel_mult, (angle_soll - angle_ist));
-                if (vel_mult == 0.0){
+                if (vel_mult ==0.0){
                     state_ = RIGHT;
+                    // ROS_WARN("turn to right");
                 }
                 break;
         }

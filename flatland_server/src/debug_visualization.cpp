@@ -159,44 +159,30 @@ void DebugVisualization::BodyToMarkers(visualization_msgs::MarkerArray& markers,
 
       } break;
 
-      case b2Shape::e_polygon: { 
-
-        //Added by Ronja Gueldenring
+      case b2Shape::e_polygon: {
+        //Added by Ronja Gueldenring ,optimized by Junhui Li
         //Publishing a filled polygon instead of a LINE_STRIP
         b2PolygonShape* poly = (b2PolygonShape*)fixture->GetShape();
-        if (poly->m_count == 4){
-          marker.type = marker.TRIANGLE_LIST;
-          marker.scale.x = 1;  
-          marker.scale.y = 1;  
-          marker.scale.z = 1;  
-          for (int i = 0; i < (poly->m_count-1); i++) {
-            geometry_msgs::Point p;
-            p.x = poly->m_vertices[i].x;
-            p.y = poly->m_vertices[i].y;
+        marker.type = marker.TRIANGLE_LIST;
+        marker.scale.x = 1;  
+        marker.scale.y = 1;  
+        marker.scale.z = 1; 
+        geometry_msgs::Point p;
+        for (int i=0; i<poly->m_count-2; i++){
+            p.x = poly->m_vertices[0].x;
+            p.y = poly->m_vertices[0].y;
+            marker.points.push_back(p);
+
+            p.x = poly->m_vertices[i+1].x;
+            p.y = poly->m_vertices[i+1].y;
+            marker.points.push_back(p);
+
+            p.x = poly->m_vertices[i+2].x;
+            p.y = poly->m_vertices[i+2].y;
             marker.points.push_back(p);
           }
-          for (int i = 2; i < poly->m_count; i++) {
-            geometry_msgs::Point p;
-            p.x = poly->m_vertices[i].x;
-            p.y = poly->m_vertices[i].y;
-            marker.points.push_back(p);
-          }
-        }else{
-          marker.type = marker.LINE_STRIP;
-          marker.scale.x = 0.05; 
-          for (int i = 0; i < poly->m_count; i++) {
-            geometry_msgs::Point p;
-            p.x = poly->m_vertices[i].x;
-            p.y = poly->m_vertices[i].y;
-            marker.points.push_back(p);
-          }
-        
-        }
-
-
-        marker.points.push_back(marker.points[0]);  // Close the shape
-
-      } break;
+        // marker.points.push_back(marker.points[0]);  // Close the shape
+      }break;
 
       case b2Shape::e_edge: {    // Convert b2Edge -> LINE_LIST
         geometry_msgs::Point p;  // b2Edge uses vertex1 and 2 for its edges
