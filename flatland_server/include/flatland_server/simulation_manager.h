@@ -54,7 +54,6 @@
 #include<flatland_msgs/StepWorld.h>
 #include <string>
 
-#include <flatland_msgs/StepWorld.h>
 
 namespace flatland_server {
 
