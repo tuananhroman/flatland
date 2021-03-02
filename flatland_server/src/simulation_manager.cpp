@@ -130,10 +130,9 @@ void SimulationManager::Main() {
     }
     bool update_viz = ((f >= 0.0) && (f < rate.expectedCycleTime().toSec()));
 
-    if (train_mode_ == false || pre_run_steps > 0) {
-      world_->Update(timekeeper);  // Step physics by ros cycle time
-      pre_run_steps = fmax(--pre_run_steps, 0);
-    }
+  
+    world_->Update(timekeeper);  // Step physics by ros cycle time
+     qwq
 
     if (show_viz_ && update_viz) {
       world_->DebugVisualize(false);  // no need to update layer
@@ -143,6 +142,7 @@ void SimulationManager::Main() {
 
     ros::spinOnce();
     rate.sleep();
+ 
 
     // iterations++;
     // if (iterations > 100) {
@@ -202,7 +202,7 @@ bool SimulationManager::callback_StepWorld(
     };
     for (int i = 0; i < required_steps; i++)
     {
-      world_->Update(timekeeper);  // Step physics by ros cycle time
+      //world_->Update(timekeeper);  // Step physics by ros cycle time
     };
     last_update_time_ = ros::WallTime::now().toSec();
     response.success = true;
